@@ -1,7 +1,9 @@
 #pragma once
 #include <SDL.h>
 
-class Game {
+// ゲーム管理クラス
+class Game
+{
 public:
     Game();
     bool Initialize(); // ゲーム初期化
