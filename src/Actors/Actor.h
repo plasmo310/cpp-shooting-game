@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "math.h"
+#include "../Commons/Vector2.h"
 
 // アクタクラス
 // *各アクタはこのクラスを継承する

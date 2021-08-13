@@ -51,6 +51,7 @@ void Actor::UpdateActor(float deltaTime)
 // コンポーネント追加
 void Actor::AddComponent(Component* component)
 {
+    // 設定された更新順となるようソートする
     int myOrder = component->GetUpdateOrder();
     auto iter = mComponents.begin();
     for (; iter != mComponents.end(); ++iter)

@@ -3,7 +3,7 @@ project(2DShootingGame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(2DShootingGame main.cpp Game/Game.cpp Game/Game.h Game/Components/Component.cpp Game/Components/Component.h Game/Actors/Actor.cpp Game/Actors/Actor.h)
+add_executable(2DShootingGame src/main.cpp src/Game.cpp src/Game.h src/Components/Component.cpp src/Components/Component.h src/Actors/Actor.cpp src/Actors/Actor.h src/Commons/Vector2.cpp src/Commons/Vector2.h)
 
 # SDL2のパスを設定
 # 自身の環境に合わせて書き換えるべし
