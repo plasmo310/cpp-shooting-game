@@ -21,6 +21,9 @@ public:
     void RemoveSprite(class SpriteComponent* sprite); // 描画中のスプライトを削除
 
     SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
+
+    const float ScreenWidth  = 768.0f;  // スクリーン横幅
+    const float ScreenHeight = 1024.0f; // スクリーン縦幅
 private:
     bool InitializeSDL();  // SDL関連初期化
     void ProcessInput();   // ゲームループ 入力検知

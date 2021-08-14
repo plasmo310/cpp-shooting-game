@@ -2,6 +2,7 @@
 #include "SDL_image.h"
 #include "Actors/Actor.h"
 #include "Components/SpriteComponent.h"
+#include "Components/ScrollSpriteComponent.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -35,7 +36,7 @@ bool Game::InitializeSDL()
     bool success = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == 0;
     if (!success) return false;
 
-    mWindow = SDL_CreateWindow("ShootingGame", 100, 100, 768, 1024, 0);
+    mWindow = SDL_CreateWindow("ShootingGame", 100, 100, ScreenWidth, ScreenHeight, 0);
     if (!mWindow) return false;
 
     mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -50,19 +51,25 @@ bool Game::InitializeSDL()
 // データのロード処理
 void Game::LoadData()
 {
-    // TODO アクタやスプライトの生成
+    // 背景の描画
+    // ２枚のスクロール速度を変えて視差スクロールにする
     Actor* bgBack = new Actor(this);
-    bgBack->SetPosition(Vector2(356.0f, 512.0f));
-    SpriteComponent* bgBackSprite = new SpriteComponent(bgBack);
+    bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+    ScrollSpriteComponent* bgBackSprite = new ScrollSpriteComponent(bgBack, 10);
     bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
+    bgBackSprite->SetScreenHeight(ScreenHeight);
+    bgBackSprite->SetScrollSpeedY(100.0f); // 速度：100
 
     Actor* bgFront = new Actor(this);
-    bgFront->SetPosition(Vector2(356.0f, 512.0f));
-    SpriteComponent* bgFrontSprite = new SpriteComponent(bgFront);
+    bgFront->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+    ScrollSpriteComponent* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
     bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
+    bgFrontSprite->SetScreenHeight(ScreenHeight);
+    bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
 
+    // TODO エレキシップ、敵キャラの描画
     Actor* ship = new Actor(this);
-    ship->SetPosition(Vector2(356.0f, 800.0f));
+    ship->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
     SpriteComponent* shipSprite = new SpriteComponent(ship);
     shipSprite->SetTexture(LoadTexture("../Assets/ship.png"));
 }
