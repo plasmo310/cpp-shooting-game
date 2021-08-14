@@ -1,6 +1,8 @@
 #include "Actor.h"
-#include "../Components/Component.h"
+#include <vector>
 #include "../Game.h"
+#include "../Components/Component.h"
+#include "../Components/SpriteComponent.h"
 
 Actor::Actor(Game* game)
 :mState(EActive)

@@ -14,5 +14,6 @@ protected:
     int mUpdateOrder;    // コンポーネント更新の順番
 
 public:
+    // Getter, Setter
     int GetUpdateOrder() const { return mUpdateOrder; }
 };

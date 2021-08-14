@@ -9,9 +9,8 @@ class Actor
 public:
     enum State
     {
-        EActive,
-        EPaused,
-        EDead
+        EActive, // アクティブ
+        EDead    // 死亡
     };
 
     Actor(class Game* game);

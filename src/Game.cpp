@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "SDL_image.h"
 #include "Actors/Actor.h"
+#include "Components/SpriteComponent.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -50,15 +51,58 @@ bool Game::InitializeSDL()
 void Game::LoadData()
 {
     // TODO アクタやスプライトの生成
+    Actor* actor = new Actor(this);
+    actor->SetPosition(Vector2(512.0f, 356.0f));
+    SpriteComponent* sprite = new SpriteComponent(actor);
+    sprite->SetTexture(LoadTexture("../Assets/goroyan.png"));
 }
 
 // データのアンロード処理
 void Game::UnloadData()
 {
+    // アクタ破棄
     while (!mActors.empty())
     {
         delete mActors.back();
     }
+    // テクスチャ破棄
+    for (auto i : mCachedTextures)
+    {
+        SDL_DestroyTexture(i.second);
+    }
+    mCachedTextures.clear();
+}
+
+// ファイル名からテクスチャをロードする
+SDL_Texture* Game::LoadTexture(const std::string& fileName)
+{
+    SDL_Texture* tex = nullptr;
+    auto iter = mCachedTextures.find(fileName);
+    if (iter != mCachedTextures.end())
+    {
+        // キャッシュ済なら変数から取得
+        tex = iter->second;
+    }
+    else
+    {
+        // テクスチャをロードする
+        SDL_Surface* surf = IMG_Load(fileName.c_str());
+        if (!surf)
+        {
+            SDL_Log("Error load texture file %s", fileName.c_str());
+            return nullptr;
+        }
+        tex = SDL_CreateTextureFromSurface(mRenderer, surf);
+        SDL_FreeSurface(surf);
+        if (!tex)
+        {
+            SDL_Log("Error convert surface to texture %s", fileName.c_str());
+            return nullptr;
+        }
+        // 変数にキャッシュする
+        mCachedTextures.emplace(fileName.c_str(), tex);
+    }
+    return tex;
 }
 
 // ゲームループ処理
@@ -140,7 +184,11 @@ void Game::GenerateOutput()
     SDL_SetRenderDrawColor(mRenderer,10,10,10,255); // グレー
     SDL_RenderClear(mRenderer);
 
-    // TODO ゲームオブジェクト描画
+    // スプライトを描画
+    for (auto sprite : mSprites)
+    {
+        sprite->Draw(mRenderer);
+    }
 
     // バックバッファとスワップ(ダブルバッファ)
     SDL_RenderPresent(mRenderer);
@@ -180,4 +228,27 @@ void Game::RemoveActor(Actor* actor)
     {
         mActors.erase(iter);
     }
+}
+
+// 描画中のスプライト追加処理
+void Game::AddSprite(SpriteComponent* sprite)
+{
+    // 描画順にソートして追加
+    int myDrawOrder = sprite->GetDrawOrder();
+    auto iter = mSprites.begin();
+    for (; iter != mSprites.end(); ++iter)
+    {
+        if (myDrawOrder < (*iter)->GetDrawOrder())
+        {
+            break;
+        }
+    }
+    mSprites.insert(iter, sprite);
+}
+
+// 描画中のスプライト削除処理
+void Game::RemoveSprite(SpriteComponent* sprite)
+{
+    auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+    mSprites.erase(iter);
 }

@@ -1,8 +1,11 @@
 #pragma once
 #include <SDL.h>
-#include "Actors/Actor.h"
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 // ゲーム管理クラス
+// *ゲーム全体の流れ、アクタ生成、テクスチャ読込を行う
 class Game
 {
 public:
@@ -13,6 +16,11 @@ public:
 
     void AddActor(class Actor* actor);    // アクタ追加
     void RemoveActor(class Actor* actor); // アクタ削除
+
+    void AddSprite(class SpriteComponent* sprite);    // 描画中のスプライトを追加
+    void RemoveSprite(class SpriteComponent* sprite); // 描画中のスプライトを削除
+
+    SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
 private:
     bool InitializeSDL();  // SDL関連初期化
     void ProcessInput();   // ゲームループ 入力検知
@@ -21,8 +29,10 @@ private:
     void LoadData();       // データロード処理
     void UnloadData();     // データアンロード処理
 
-    std::vector<class Actor*> mActors;        // アクタリスト
-    std::vector<class Actor*> mPendingActors; // 待機中のアクタリスト
+    std::vector<class Actor*> mActors;            // アクタリスト
+    std::vector<class Actor*> mPendingActors;     // 待機中のアクタリスト
+    std::vector<class SpriteComponent*> mSprites; // 描画中のスプライトリスト
+    std::unordered_map<std::string, SDL_Texture*> mCachedTextures; // キャッシュしたテクスチャリスト
 
     SDL_Window* mWindow;     // SDLウィンドウ
     SDL_Renderer* mRenderer; // SDLレンダラー
