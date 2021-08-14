@@ -80,7 +80,7 @@ void Game::LoadData()
 
     Enemy* enemy2 = new Enemy(this);
     enemy2->SetPosition(Vector2(100, -100.0f));
-    enemy2->SetEnemySpeed(350a.0f);
+    enemy2->SetEnemySpeed(350.0f);
 
     Enemy* enemy3 = new Enemy(this);
     enemy3->SetPosition(Vector2(550, -200.0f));
