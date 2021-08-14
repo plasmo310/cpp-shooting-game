@@ -35,7 +35,7 @@ bool Game::InitializeSDL()
     bool success = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == 0;
     if (!success) return false;
 
-    mWindow = SDL_CreateWindow("ShootingGame", 100, 100, 1024, 768, 0);
+    mWindow = SDL_CreateWindow("ShootingGame", 100, 100, 768, 1024, 0);
     if (!mWindow) return false;
 
     mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -51,10 +51,20 @@ bool Game::InitializeSDL()
 void Game::LoadData()
 {
     // TODO アクタやスプライトの生成
-    Actor* actor = new Actor(this);
-    actor->SetPosition(Vector2(512.0f, 356.0f));
-    SpriteComponent* sprite = new SpriteComponent(actor);
-    sprite->SetTexture(LoadTexture("../Assets/goroyan.png"));
+    Actor* bgBack = new Actor(this);
+    bgBack->SetPosition(Vector2(356.0f, 512.0f));
+    SpriteComponent* bgBackSprite = new SpriteComponent(bgBack);
+    bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
+
+    Actor* bgFront = new Actor(this);
+    bgFront->SetPosition(Vector2(356.0f, 512.0f));
+    SpriteComponent* bgFrontSprite = new SpriteComponent(bgFront);
+    bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
+
+    Actor* ship = new Actor(this);
+    ship->SetPosition(Vector2(356.0f, 800.0f));
+    SpriteComponent* shipSprite = new SpriteComponent(ship);
+    shipSprite->SetTexture(LoadTexture("../Assets/ship.png"));
 }
 
 // データのアンロード処理
@@ -181,7 +191,7 @@ void Game::UpdateGame()
 void Game::GenerateOutput()
 {
     // 背景色をクリア
-    SDL_SetRenderDrawColor(mRenderer,10,10,10,255); // グレー
+    SDL_SetRenderDrawColor(mRenderer,19,56,111,255); // 紺色
     SDL_RenderClear(mRenderer);
 
     // スプライトを描画
