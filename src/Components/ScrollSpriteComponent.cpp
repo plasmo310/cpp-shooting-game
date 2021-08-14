@@ -1,9 +1,9 @@
 #include "ScrollSpriteComponent.h"
 #include "../Actors/Actor.h"
+#include "../Game.h"
 
 ScrollSpriteComponent::ScrollSpriteComponent(class Actor *actor, int drawOrder)
 : SpriteComponent(actor, drawOrder)
-, mScreenHeight(0.0f)
 , mScrollSpeedY(0.0f)
 , mOffsetY(0.0f)
 {
@@ -15,9 +15,9 @@ void ScrollSpriteComponent::Update(float deltaTime)
     SpriteComponent::Update(deltaTime);
     // オフセット値を更新
     mOffsetY += mScrollSpeedY * deltaTime;
-    if (mOffsetY > mScreenHeight)
+    if (mOffsetY > Game::ScreenHeight)
     {
-        mOffsetY -= mScreenHeight;
+        mOffsetY -= Game::ScreenHeight;
     }
 }
 
@@ -40,7 +40,7 @@ void ScrollSpriteComponent::Draw(SDL_Renderer* renderer)
     r_top.w = static_cast<int>(mTexWidth * mActor->GetScale());
     r_top.h = static_cast<int>(mTexHeight * mActor->GetScale());
     r_top.x = static_cast<int>(mActor->GetPosition().x - r_top.w / 2);
-    r_top.y = static_cast<int>(mActor->GetPosition().y - r_top.h / 2  - mScreenHeight + mOffsetY); // スクリーンサイズ分引く
+    r_top.y = static_cast<int>(mActor->GetPosition().y - r_top.h / 2  - Game::ScreenHeight + mOffsetY); // スクリーンサイズ分引く
     SDL_RenderCopy(renderer,
            mTexture,
            nullptr,

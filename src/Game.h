@@ -22,8 +22,9 @@ public:
 
     SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
 
-    const float ScreenWidth  = 768.0f;  // スクリーン横幅
-    const float ScreenHeight = 1024.0f; // スクリーン縦幅
+    constexpr static const float ScreenWidth  = 768.0f;  // スクリーン横幅
+    constexpr static const float ScreenHeight = 1024.0f; // スクリーン縦幅
+
 private:
     bool InitializeSDL();  // SDL関連初期化
     void ProcessInput();   // ゲームループ 入力検知
@@ -42,4 +43,6 @@ private:
     Uint32 mTicksCount;      // ゲーム時間
     bool mIsRunning;         // 実行中か否か？
     bool mUpdatingActors;    // アクタ更新中か否か？
+
+    class Ship* mShip; // 宇宙船
 };

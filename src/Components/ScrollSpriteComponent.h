@@ -11,13 +11,11 @@ public:
     void Draw(SDL_Renderer* renderer) override;
 
 private:
-    float mScreenHeight; // Y方向のスクリーンサイズ
     float mScrollSpeedY; // Y方向のスクロール速度
     float mOffsetY;      // Y方向のオフセット値
 
 public:
     // Setter, Getter
-    void SetScreenHeight(const float size) { mScreenHeight = size; }
     void SetScrollSpeedY(float speed) { mScrollSpeedY = speed; }
 
 };

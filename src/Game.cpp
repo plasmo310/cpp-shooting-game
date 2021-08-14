@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "SDL_image.h"
 #include "Actors/Actor.h"
+#include "Actors/Ship.h"
 #include "Components/SpriteComponent.h"
 #include "Components/ScrollSpriteComponent.h"
 
@@ -57,21 +58,17 @@ void Game::LoadData()
     bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
     ScrollSpriteComponent* bgBackSprite = new ScrollSpriteComponent(bgBack, 10);
     bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
-    bgBackSprite->SetScreenHeight(ScreenHeight);
     bgBackSprite->SetScrollSpeedY(100.0f); // 速度：100
 
     Actor* bgFront = new Actor(this);
     bgFront->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
     ScrollSpriteComponent* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
     bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
-    bgFrontSprite->SetScreenHeight(ScreenHeight);
     bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
 
-    // TODO エレキシップ、敵キャラの描画
-    Actor* ship = new Actor(this);
-    ship->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
-    SpriteComponent* shipSprite = new SpriteComponent(ship);
-    shipSprite->SetTexture(LoadTexture("../Assets/ship.png"));
+    // 宇宙船の作成
+    mShip = new Ship(this);
+    mShip->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
 }
 
 // データのアンロード処理
@@ -147,7 +144,14 @@ void Game::ProcessInput()
                 break;
         }
     }
-    // TODO 入力検知
+    // キーの入力イベントを受け取る
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        mIsRunning = false;
+    }
+    // 宇宙船のキーイベント
+    mShip->ProcessKeyboard(state);
 }
 
 // ゲームループ 更新処理
