@@ -22,6 +22,9 @@ public:
 
     SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
 
+    void AddEnemy(class Enemy* enemy);    // エネミー追加
+    void RemoveEnemy(class Enemy* enemy); // エネミー削除
+
     constexpr static const float ScreenWidth  = 768.0f;  // スクリーン横幅
     constexpr static const float ScreenHeight = 1024.0f; // スクリーン縦幅
 
@@ -45,4 +48,9 @@ private:
     bool mUpdatingActors;    // アクタ更新中か否か？
 
     class Ship* mShip; // 宇宙船
+    std::vector<class Enemy*> mEnemies; // 敵キャラ軍
+
+public:
+    // getter, setter
+    std::vector<class Enemy*> GetEnemies() { return mEnemies; }
 };

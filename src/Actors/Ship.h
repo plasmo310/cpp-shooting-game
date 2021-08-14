@@ -16,4 +16,6 @@ private:
     bool mIsCanShot;      // ミサイルを撃てるかどうか？
     float mShotDeltaTime; // ミサイルを撃ってからの時間
     const float CanShotTime = 0.15f; // ミサイルを撃てるようになるまでの時間
+
+    class ColliderComponent* mCollider;  // コライダ
 };

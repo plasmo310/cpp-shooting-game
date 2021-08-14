@@ -9,4 +9,5 @@ public:
 
 private:
     const float mMissileSpeed = 1000.0f; // ミサイル移動速度
+    class ColliderComponent* mCollider;  // コライダ
 };

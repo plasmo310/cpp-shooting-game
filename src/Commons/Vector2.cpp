@@ -71,6 +71,12 @@ float Vector2::Length() const
     return (sqrtf(x*x + y*y));
 }
 
+// vec length(not sqrt)
+float Vector2::LengthSq() const
+{
+    return (x*x + y*y);
+}
+
 // vec normalize
 void Vector2::Normalize()
 {

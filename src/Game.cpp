@@ -2,6 +2,7 @@
 #include "SDL_image.h"
 #include "Actors/Actor.h"
 #include "Actors/Ship.h"
+#include "Actors/Enemy.h"
 #include "Components/SpriteComponent.h"
 #include "Components/ScrollSpriteComponent.h"
 
@@ -69,6 +70,24 @@ void Game::LoadData()
     // 宇宙船の作成
     mShip = new Ship(this);
     mShip->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
+
+    // TODO ジェネレータの作成
+    // エネミーの作成
+    Enemy* enemy = new Enemy(this);
+    enemy->SetPosition(Vector2(ScreenWidth / 2, 0.0f));
+    enemy->SetScale(1.2f);
+    enemy->SetEnemyMoveType(Enemy::SHAKE);
+
+    Enemy* enemy2 = new Enemy(this);
+    enemy2->SetPosition(Vector2(100, -100.0f));
+    enemy2->SetEnemySpeed(350a.0f);
+
+    Enemy* enemy3 = new Enemy(this);
+    enemy3->SetPosition(Vector2(550, -200.0f));
+    enemy3->SetScale(0.7f);
+    enemy3->SetEnemyMoveType(Enemy::SHAKE);
+    enemy3->SetEnemySpeed(500.0f);
+    enemy3->SetEnemyShakeWidth(10.0f);
 }
 
 // データのアンロード処理
@@ -272,4 +291,20 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 {
     auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
     mSprites.erase(iter);
+}
+
+// エネミー追加
+void Game::AddEnemy(Enemy* enemy)
+{
+    mEnemies.emplace_back(enemy);
+}
+
+// エネミー削除
+void Game::RemoveEnemy(Enemy* enemy)
+{
+    auto iter = std::find(mEnemies.begin(),mEnemies.end(), enemy);
+    if (iter != mEnemies.end())
+    {
+        mEnemies.erase(iter);
+    }
 }

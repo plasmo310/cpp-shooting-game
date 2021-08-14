@@ -1,8 +1,10 @@
 #include "Ship.h"
 #include <SDL.h>
-#include "../Game.h"
+#include "Enemy.h"
 #include "Missile.h"
+#include "../Game.h"
 #include "../Components/SpriteComponent.h"
+#include "../Components/ColliderComponent.h"
 
 Ship::Ship(Game* game)
 :Actor(game)
@@ -12,8 +14,11 @@ Ship::Ship(Game* game)
 ,mShotDeltaTime(0.0f)
 {
     // スプライト設定
-    SpriteComponent* shipSprite = new SpriteComponent(this);
-    shipSprite->SetTexture(GetGame()->LoadTexture("../Assets/ship.png"));
+    SpriteComponent* sprite = new SpriteComponent(this);
+    sprite->SetTexture(GetGame()->LoadTexture("../Assets/ship.png"));
+    // コライダ追加
+    mCollider = new ColliderComponent(this);
+    mCollider->SetRadius(70.0f * GetScale());
 }
 
 // アクタ更新
@@ -42,6 +47,17 @@ void Ship::UpdateActor(float deltaTime)
         pos.y = Game::ScreenHeight - 25.0f;
     }
     SetPosition(pos);
+
+    // エネミーと衝突したら死亡
+    for (auto enemy : GetGame()->GetEnemies())
+    {
+        if (Intersect(*mCollider, *(enemy->GetCollider())))
+        {
+            // TODO ゲームオーバー処理
+            SetState(EDead);
+            break;
+        }
+    }
 
     // ミサイルを撃つ感覚を空ける
     if (!mIsCanShot)
@@ -89,8 +105,6 @@ void Ship::ProcessKeyboard(const uint8_t* state)
             Missile* missile = new Missile(GetGame());
             Vector2 pos = GetPosition();
             missile->SetPosition(Vector2(pos.x, pos.y - 30.0f));
-            SpriteComponent* missileSprite = new SpriteComponent(missile, 90);
-            missileSprite->SetTexture(GetGame()->LoadTexture("../Assets/missile.png"));
         }
     }
 }

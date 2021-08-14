@@ -21,6 +21,7 @@ public:
     Vector2& operator*=(float scalar);
 
     float Length() const;
+    float LengthSq() const;
     void Normalize();
 
     static const Vector2 Zero;

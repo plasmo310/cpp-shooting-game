@@ -3,7 +3,7 @@ project(2DShootingGame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(2DShootingGame src/main.cpp src/Game.cpp src/Game.h src/Components/Component.cpp src/Components/Component.h src/Actors/Actor.cpp src/Actors/Actor.h src/Commons/Vector2.cpp src/Commons/Vector2.h src/Components/SpriteComponent.cpp src/Components/SpriteComponent.h src/Commons/Math.h src/Components/ScrollSpriteComponent.cpp src/Components/ScrollSpriteComponent.h src/Actors/Ship.cpp src/Actors/Ship.h src/Actors/Missile.cpp src/Actors/Missile.h)
+add_executable(2DShootingGame src/main.cpp src/Game.cpp src/Game.h src/Components/Component.cpp src/Components/Component.h src/Actors/Actor.cpp src/Actors/Actor.h src/Commons/Vector2.cpp src/Commons/Vector2.h src/Components/SpriteComponent.cpp src/Components/SpriteComponent.h src/Commons/Math.h src/Components/ScrollSpriteComponent.cpp src/Components/ScrollSpriteComponent.h src/Actors/Ship.cpp src/Actors/Ship.h src/Actors/Missile.cpp src/Actors/Missile.h src/Actors/Enemy.cpp src/Actors/Enemy.h src/Components/ColliderComponent.cpp src/Components/ColliderComponent.h)
 
 # SDL2のパスを設定
 # 自身の環境に合わせて書き換えるべし
