@@ -5,6 +5,7 @@
 #include "Actors/Enemy.h"
 #include "Components/SpriteComponent.h"
 #include "Components/ScrollSpriteComponent.h"
+#include "Commons/Math.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -109,23 +110,22 @@ void Game::StartScene()
             break;
         case GAME_SCENE:
             {
-                // TODO ジェネレータの作成
-                // エネミーの作成
-                Enemy* enemy = new Enemy(this);
-                enemy->SetPosition(Vector2(ScreenWidth / 2, 0.0f));
-                enemy->SetScale(1.2f);
-                enemy->SetEnemyMoveType(Enemy::SHAKE);
-
-                Enemy* enemy2 = new Enemy(this);
-                enemy2->SetPosition(Vector2(100, -100.0f));
-                enemy2->SetEnemySpeed(350.0f);
-
-                Enemy* enemy3 = new Enemy(this);
-                enemy3->SetPosition(Vector2(550, -200.0f));
-                enemy3->SetScale(0.7f);
-                enemy3->SetEnemyMoveType(Enemy::SHAKE);
-                enemy3->SetEnemySpeed(500.0f);
-                enemy3->SetEnemyShakeWidth(10.0f);
+                // エネミーをランダム作成
+                for (int i = 0; i < 30; i++)
+                {
+                    Enemy* enemy = new Enemy(this);
+                    enemy->SetPosition(Vector2(Math::GetRand(100.0f, ScreenWidth - 100.0f), -100.0f));
+                    enemy->SetEnemySpeed(Math::GetRand(300.0f, 550.0f));
+                    enemy->SetScale(Math::GetRand(0.5f, 1.5f));
+                    // 数匹ごとに揺らす
+                    if (i % 2 == 0)
+                    {
+                        enemy->SetEnemyMoveType(Enemy::SHAKE);
+                        enemy->SetEnemyShakeWidth(Math::GetRand(5.0f, 15.0f));
+                    }
+                    // 数匹ずつ動かす
+                    enemy->SetWaitTime(i / 3 * Math::GetRand(80.0f, 100.0f));
+                }
             }
             break;
         case END_SCENE:
@@ -183,9 +183,6 @@ void Game::UpdateScene()
             // エネミーを全部撃破したら終了シーンに遷移
             if (mEnemies.empty())
             {
-                // 宇宙船の動きを止める
-                mShip->SetRightMove(0.0f);
-                mShip->SetDownMove(0.0f);
                 // クリア
                 mGameClear = true;
                 SetNextScene(END_SCENE);

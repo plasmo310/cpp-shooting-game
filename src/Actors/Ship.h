@@ -11,16 +11,11 @@ public:
 private:
     float mRightMove; // 右方向への移動量
     float mDownMove;  // 下方向への移動量
-    const float ShipSpeed = 420.0f; // 移動速度
+    const float ShipSpeed = 480.0f; // 移動速度
 
     bool mIsCanShot;      // ミサイルを撃てるかどうか？
     float mShotDeltaTime; // ミサイルを撃ってからの時間
     const float CanShotTime = 0.15f; // ミサイルを撃てるようになるまでの時間
 
     class ColliderComponent* mCollider;  // コライダ
-
-public:
-    // Getter, Setter
-    void SetRightMove(const float move) { mRightMove = move; }
-    void SetDownMove(const float move) { mDownMove = move; }
 };

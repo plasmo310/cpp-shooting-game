@@ -8,8 +8,9 @@ Enemy::Enemy(Game* game)
 :Actor(game)
 ,mEnemyMoveType(STRAIGHT)
 ,mEnemySpeed(150.0f)
-,mUpdateCount(0.0f)
+,mTimeCount(0.0f)
 ,mEnemyShakeWidth(5.0f)
+,mWaitTime(0.0f)
 {
     // スプライト設定
     SpriteComponent* sprite = new SpriteComponent(this);
@@ -31,6 +32,13 @@ void Enemy::UpdateActor(float deltaTime)
 {
     // 親のメソッド呼び出し
     Actor::UpdateActor(deltaTime);
+    // 時間をカウント
+    mTimeCount++;
+    if (mTimeCount < mWaitTime)
+    {
+        // 待機時間分は待つ
+        return;
+    }
     // 移動処理
     Vector2 pos = GetPosition();
     switch (mEnemyMoveType)
@@ -39,21 +47,19 @@ void Enemy::UpdateActor(float deltaTime)
             pos.y += mEnemySpeed * deltaTime;
             break;
         case SHAKE:
-            pos.x = mInitPosition->x + (sinf(mUpdateCount / 10.0f) * mEnemyShakeWidth);
+            pos.x = mInitPosition->x + (sinf(mTimeCount / 10.0f) * mEnemyShakeWidth);
             pos.y += mEnemySpeed * deltaTime;
             break;
         default:
             break;
     }
-    // 画面外に出たら破棄
+    // 画面外に出たらゲームオーバー
     if (pos.y >= GetGame()->ScreenHeight)
     {
         SetState(EDead);
+        GetGame()->SetNextScene(Game::END_SCENE);
     }
     SetPosition(pos);
-
-    // 時間をカウント
-    mUpdateCount++;
 }
 
 void Enemy::SetPosition(const Vector2& pos)

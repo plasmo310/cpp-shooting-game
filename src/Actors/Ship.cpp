@@ -27,27 +27,31 @@ void Ship::UpdateActor(float deltaTime)
 {
     // 親のメソッド呼び出し
     Actor::UpdateActor(deltaTime);
-    // 宇宙船を移動させる
-    Vector2 pos = GetPosition();
-    pos.x += mRightMove * deltaTime;
-    pos.y += mDownMove * deltaTime;
-    if (pos.x < 25.0f)
+    // ゲーム終了していたら動かさない
+    if (GetGame()->GetScene() != Game::END_SCENE)
     {
-        pos.x = 25.0f;
+        // 宇宙船を移動させる
+        Vector2 pos = GetPosition();
+        pos.x += mRightMove * deltaTime;
+        pos.y += mDownMove * deltaTime;
+        if (pos.x < 25.0f)
+        {
+            pos.x = 25.0f;
+        }
+        else if (pos.x > Game::ScreenWidth - 25.0f)
+        {
+            pos.x = Game::ScreenWidth - 25.0f;
+        }
+        if (pos.y < 25.0f)
+        {
+            pos.y = 25.0f;
+        }
+        else if (pos.y > Game::ScreenHeight - 25.0f)
+        {
+            pos.y = Game::ScreenHeight - 25.0f;
+        }
+        SetPosition(pos);
     }
-    else if (pos.x > Game::ScreenWidth - 25.0f)
-    {
-        pos.x = Game::ScreenWidth - 25.0f;
-    }
-    if (pos.y < 25.0f)
-    {
-        pos.y = 25.0f;
-    }
-    else if (pos.y > Game::ScreenHeight - 25.0f)
-    {
-        pos.y = Game::ScreenHeight - 25.0f;
-    }
-    SetPosition(pos);
 
     // エネミーと衝突したら死亡
     for (auto enemy : GetGame()->GetEnemies())

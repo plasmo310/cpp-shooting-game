@@ -22,7 +22,8 @@ private:
     float mEnemySpeed;       // 移動速度
     float mEnemyShakeWidth;  // 揺れる幅
     Vector2* mInitPosition;  // 最初の位置
-    float mUpdateCount; // 経過時間(sin更新用)
+    float mTimeCount; // 経過時間
+    float mWaitTime;  // 待機時間
     class ColliderComponent* mCollider;  // コライダ
 
 public:
@@ -33,5 +34,7 @@ public:
     void SetEnemySpeed(const float speed) { mEnemySpeed = speed; }
     float GetEnemyShakeWidth() const { return mEnemyShakeWidth; }
     void SetEnemyShakeWidth(const float width) { mEnemyShakeWidth = width; }
+    float GetWaitTime() const { return mWaitTime; }
+    void SetWaitTime(const float time) { mWaitTime = time; }
     class ColliderComponent* GetCollider() const { return mCollider; }
 };

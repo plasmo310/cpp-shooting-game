@@ -69,4 +69,6 @@ public:
     std::vector<class Enemy*> GetEnemies() { return mEnemies; }
     Scene GetNextScene() const { return mNextScene; }
     void SetNextScene(const Scene scene) { mNextScene = scene; }
+    Scene GetScene() const { return mScene; }
+    void SetScene(const Scene scene) { mScene = scene; }
 };
