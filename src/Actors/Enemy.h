@@ -28,13 +28,9 @@ private:
 
 public:
     // Getter, Setter
-    MoveType GetEnemyMoveType() const { return mEnemyMoveType; }
     void SetEnemyMoveType(const MoveType moveType) { mEnemyMoveType = moveType; }
-    float GetEnemySpeed() const { return mEnemySpeed; }
     void SetEnemySpeed(const float speed) { mEnemySpeed = speed; }
-    float GetEnemyShakeWidth() const { return mEnemyShakeWidth; }
     void SetEnemyShakeWidth(const float width) { mEnemyShakeWidth = width; }
-    float GetWaitTime() const { return mWaitTime; }
     void SetWaitTime(const float time) { mWaitTime = time; }
     class ColliderComponent* GetCollider() const { return mCollider; }
 };

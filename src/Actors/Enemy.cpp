@@ -13,7 +13,7 @@ Enemy::Enemy(Game* game)
 ,mWaitTime(0.0f)
 {
     // スプライト設定
-    SpriteComponent* sprite = new SpriteComponent(this);
+    auto* sprite = new SpriteComponent(this);
     sprite->SetTexture(GetGame()->LoadTexture("../Assets/enemy.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
@@ -32,13 +32,14 @@ void Enemy::UpdateActor(float deltaTime)
 {
     // 親のメソッド呼び出し
     Actor::UpdateActor(deltaTime);
-    // 時間をカウント
+
+    // 待機時間分は待つ
     mTimeCount++;
     if (mTimeCount < mWaitTime)
     {
-        // 待機時間分は待つ
         return;
     }
+
     // 移動処理
     Vector2 pos = GetPosition();
     switch (mEnemyMoveType)
@@ -54,7 +55,7 @@ void Enemy::UpdateActor(float deltaTime)
             break;
     }
     // 画面外に出たらゲームオーバー
-    if (pos.y >= GetGame()->ScreenHeight)
+    if (pos.y >= Game::ScreenHeight)
     {
         SetState(EDead);
         GetGame()->SetNextScene(Game::END_SCENE);

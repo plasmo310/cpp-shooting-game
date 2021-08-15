@@ -1,7 +1,7 @@
 #include "SpriteComponent.h"
+#include "../Game.h"
 #include "../Actors/Actor.h"
 #include "../Commons/Math.h"
-#include "../Game.h"
 
 SpriteComponent::SpriteComponent(class Actor *actor, int drawOrder)
 :Component(actor)

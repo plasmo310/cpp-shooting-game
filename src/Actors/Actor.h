@@ -28,7 +28,7 @@ private:
     Vector2 mPosition; // 位置
     float mScale;      // 大きさ
     float mRotation;   // 回転
-    std::vector<class Component*> mComponents; // 保持するコンポーネント
+    std::vector<class Component*> mComponents; // 保有するコンポーネント
     class Game* mGame; // ゲームクラス
 
 public:

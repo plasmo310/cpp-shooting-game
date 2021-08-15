@@ -11,12 +11,6 @@ Vector2::Vector2(float inX, float inY)
 ,y(inY)
 {}
 
-void Vector2::Set(float inX, float inY)
-{
-    x = inX;
-    y = inY;
-}
-
 // vec + vec
 Vector2 operator+(const Vector2& a, const Vector2& b)
 {
@@ -77,13 +71,5 @@ float Vector2::LengthSq() const
     return (x*x + y*y);
 }
 
-// vec normalize
-void Vector2::Normalize()
-{
-    float length = Length();
-    x /= length;
-    y /= length;
-}
-
-// 定数：0ベクトル
+// zero vec
 const Vector2 Vector2::Zero(0.0f, 0.0f);

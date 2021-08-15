@@ -7,7 +7,7 @@ BombEffect::BombEffect(class Game *game)
 ,mTimeCount(0.0f)
 {
     // スプライト設定
-    SpriteComponent* sprite = new SpriteComponent(this);
+    auto* sprite = new SpriteComponent(this);
     sprite->SetTexture(GetGame()->LoadTexture("../Assets/bomb.png"));
     // 最初は大きさ0にする
     SetScale(0.0f);

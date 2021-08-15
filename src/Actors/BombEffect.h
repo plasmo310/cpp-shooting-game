@@ -8,6 +8,6 @@ public:
     void UpdateActor(float deltaTime) override;
 
 private:
-    float mTimeCount; // 時間カウント
+    float mTimeCount; // 経過時間
     const float DisplayTime = 1.0f; // 表示時間
 };

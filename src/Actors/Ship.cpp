@@ -12,10 +12,10 @@ Ship::Ship(Game* game)
 ,mRightMove(0.0f)
 ,mDownMove(0.0f)
 ,mIsCanShot(false)
-,mShotDeltaTime(0.0f)
+,mDeltaShotTime(0.0f)
 {
     // スプライト設定
-    SpriteComponent* sprite = new SpriteComponent(this);
+    auto* sprite = new SpriteComponent(this);
     sprite->SetTexture(GetGame()->LoadTexture("../Assets/ship.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
@@ -61,21 +61,21 @@ void Ship::UpdateActor(float deltaTime)
             // ゲーム終了
             GetGame()->SetNextScene(Game::END_SCENE);
             SetState(EDead);
-            // 宇宙船の位置で爆発させる
-            BombEffect* bomb = new BombEffect(GetGame());
-            bomb->SetPosition(*(new Vector2(GetPosition())));
+            // 宇宙船の位置で爆発エフェクト
+            auto* bomb = new BombEffect(GetGame());
+            bomb->SetPosition(Vector2(GetPosition()));
             return;
         }
     }
 
-    // ミサイルを撃つ感覚を空ける
+    // ミサイルを撃つ間隔を開ける
     if (!mIsCanShot)
     {
-        mShotDeltaTime += deltaTime;
-        if (mShotDeltaTime > CanShotTime)
+        mDeltaShotTime += deltaTime;
+        if (mDeltaShotTime > CanShotTime)
         {
             mIsCanShot = true;
-            mShotDeltaTime = 0.0f;
+            mDeltaShotTime = 0.0f;
         }
     }
 }
@@ -107,11 +107,11 @@ void Ship::ProcessKeyboard(const uint8_t* state)
     {
         if (mIsCanShot)
         {
-            // 撃つ感覚を空けるためフラグを付ける
+            // 撃つ間隔を開けるためフラグを変更
             mIsCanShot = false;
-            mShotDeltaTime = 0.0f;
-            // ミサイル生成s
-            Missile* missile = new Missile(GetGame());
+            mDeltaShotTime = 0.0f;
+            // ミサイル生成
+            auto* missile = new Missile(GetGame());
             Vector2 pos = GetPosition();
             missile->SetPosition(Vector2(pos.x, pos.y - 30.0f));
         }

@@ -15,9 +15,9 @@ public:
 
 protected:
     SDL_Texture* mTexture;
-    int mDrawOrder;
-    int mTexWidth;
-    int mTexHeight;
+    int mDrawOrder; // 描画順
+    int mTexWidth;  // テクスチャ横幅
+    int mTexHeight; // テクスチャ縦幅
 
 public:
     // Getter, Setter

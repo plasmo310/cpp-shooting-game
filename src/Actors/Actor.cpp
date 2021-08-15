@@ -11,15 +11,15 @@ Actor::Actor(Game* game)
 ,mRotation(0.0f)
 ,mGame(game)
 {
-    // ゲームクラスにアクタを追加
+    // アクタ追加
     mGame->AddActor(this);
 }
 
 Actor::~Actor()
 {
-    // ゲームクラスからアクタを削除
+    // アクタ削除
     mGame->RemoveActor(this);
-    // コンポーネントも合わせて削除
+    // コンポーネント削除
     while (!mComponents.empty())
     {
         delete mComponents.back();
@@ -39,9 +39,9 @@ void Actor::Update(float deltaTime)
 // コンポーネント更新処理
 void Actor::UpdateComponents(float deltaTime)
 {
-    for (auto comp : mComponents)
+    for (auto component : mComponents)
     {
-        comp->Update(deltaTime);
+        component->Update(deltaTime);
     }
 }
 

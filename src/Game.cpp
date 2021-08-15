@@ -21,18 +21,22 @@ Game::Game()
 bool Game::Initialize()
 {
     // SDL関連初期化
-    if (!InitializeSDL())
+    if (!InitSDL())
     {
         SDL_Log("%s", SDL_GetError());
         return false;
     }
     // ゲーム時間取得
     mTicksCount = SDL_GetTicks();
+
+    // シーン初期化
+    InitScene();
+
     return true;
 }
 
 // SDL関連初期化
-bool Game::InitializeSDL()
+bool Game::InitSDL()
 {
     // 初期化に失敗したらfalseを返す
     bool success = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == 0;
@@ -50,44 +54,43 @@ bool Game::InitializeSDL()
     return true;
 }
 
+// シーン初期化処理（一度だけ呼ばれる）
+void Game::InitScene()
+{
+    // 背景の作成
+    // ２枚のスクロール速度を変えて視差スクロールにする
+    auto* bgBack = new Actor(this);
+    bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+    auto* bgBackSprite = new ScrollSpriteComponent(bgBack, 10);
+    bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
+    bgBackSprite->SetScrollSpeedY(100.0f); // 速度：100
+
+    auto* bgFront = new Actor(this);
+    bgFront->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+    auto* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
+    bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
+    bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
+}
+
 // ゲームループ処理
 void Game::RunLoop()
 {
-    // シーン初期化処理
+    // 開始シーンを設定
     mScene = READY_SCENE;
     mNextScene = READY_SCENE;
-    InitScene();
     StartScene();
 
     while (mIsRunning)
     {
         // シーン更新処理
         UpdateScene();
-        // シーン初期化処理
+        // シーン開始処理
         if (mScene != mNextScene)
         {
             mScene = mNextScene;
             StartScene();
         }
     }
-}
-
-// シーン初期化処理（一度だけ呼ばれる）
-void Game::InitScene()
-{
-    // 背景の作成
-    // ２枚のスクロール速度を変えて視差スクロールにする
-    Actor* bgBack = new Actor(this);
-    bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-    ScrollSpriteComponent* bgBackSprite = new ScrollSpriteComponent(bgBack, 10);
-    bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
-    bgBackSprite->SetScrollSpeedY(100.0f); // 速度：100
-
-    Actor* bgFront = new Actor(this);
-    bgFront->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-    ScrollSpriteComponent* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
-    bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
-    bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
 }
 
 // シーン開始処理
@@ -101,11 +104,11 @@ void Game::StartScene()
                 // 開始メッセージの作成
                 mStartMsg = new Actor(this);
                 mStartMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-                SpriteComponent* startMsgSprite = new SpriteComponent(mStartMsg, 200);
+                auto* startMsgSprite = new SpriteComponent(mStartMsg, 200);
                 startMsgSprite->SetTexture(LoadTexture("../Assets/msg_start.png"));
                 // 宇宙船の作成
                 mShip = new Ship(this);
-                mShip->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
+                mShip->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight - 200.0f));
             }
             break;
         case GAME_SCENE:
@@ -113,7 +116,7 @@ void Game::StartScene()
                 // エネミーをランダム作成
                 for (int i = 0; i < 30; i++)
                 {
-                    Enemy* enemy = new Enemy(this);
+                    auto* enemy = new Enemy(this);
                     enemy->SetPosition(Vector2(Math::GetRand(100.0f, ScreenWidth - 100.0f), -100.0f));
                     enemy->SetEnemySpeed(Math::GetRand(300.0f, 550.0f));
                     enemy->SetScale(Math::GetRand(0.5f, 1.5f));
@@ -133,14 +136,13 @@ void Game::StartScene()
                 // 終了メッセージの作成
                 mEndMsg = new Actor(this);
                 mEndMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-                SpriteComponent* endMsgSprite = new SpriteComponent(mEndMsg, 200);
+                auto* endMsgSprite = new SpriteComponent(mEndMsg, 200);
                 endMsgSprite->SetTexture(LoadTexture(mGameClear ? "../Assets/msg_clear.png" : "../Assets/msg_over.png"));
             }
             break;
         default:
             break;
     }
-
 }
 
 // シーン更新処理
@@ -157,7 +159,6 @@ void Game::UpdateScene()
     {
         deltaTime = 0.05f;
     }
-    // ゲーム時間を再取得
     mTicksCount = SDL_GetTicks();
 
     // アクタ更新処理
@@ -180,19 +181,20 @@ void Game::UpdateScene()
         case READY_SCENE:
             break;
         case GAME_SCENE:
-            // エネミーを全部撃破したら終了シーンに遷移
+            // エネミーを全部撃破したらゲームクリア
             if (mEnemies.empty())
             {
-                // クリア
                 mGameClear = true;
                 SetNextScene(END_SCENE);
             }
             break;
         case END_SCENE:
             break;
+        default:
+            break;
     }
 
-    // 破棄されたアクタを削除
+    // 死亡したアクタを破棄
     std::vector<Actor*> deadActors;
     for (auto actor : mActors)
     {
@@ -213,7 +215,7 @@ void Game::UpdateScene()
 // ゲームループ 入力検知
 void Game::ProcessInput()
 {
-    // SDLイベントを受け取る
+    // SDLイベント
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
@@ -224,7 +226,7 @@ void Game::ProcessInput()
             break;
         }
     }
-    // キーの入力イベントを受け取る
+    // キー入力イベント
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if (state[SDL_SCANCODE_ESCAPE])
     {
@@ -262,6 +264,8 @@ void Game::ProcessInput()
                     enemy->SetState(Actor::EDead);
                 }
             }
+            break;
+        default:
             break;
     }
 }

@@ -6,10 +6,10 @@
 #include "../Components/ColliderComponent.h"
 
 Missile::Missile(class Game *game)
-: Actor(game)
+:Actor(game)
 {
     // スプライト追加
-    SpriteComponent* sprite = new SpriteComponent(this, 90);
+    auto* sprite = new SpriteComponent(this, 90);
     sprite->SetTexture(GetGame()->LoadTexture("../Assets/missile.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
@@ -39,8 +39,8 @@ void Missile::UpdateActor(float deltaTime)
             SetState(EDead);
             enemy->SetState(EDead);
             // エネミーの位置で爆発させる
-            BombEffect* bomb = new BombEffect(GetGame());
-            bomb->SetPosition(*(new Vector2(enemy->GetPosition())));
+            auto* bomb = new BombEffect(GetGame());
+            bomb->SetPosition(Vector2(enemy->GetPosition()));
             break;
         }
     }

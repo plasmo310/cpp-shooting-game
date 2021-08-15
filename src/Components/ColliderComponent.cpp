@@ -2,8 +2,8 @@
 #include "../Actors/Actor.h"
 
 ColliderComponent::ColliderComponent(class Actor *actor)
-: Component(actor)
-, mRadius(0.0f)
+:Component(actor)
+,mRadius(0.0f)
 {
 }
 
@@ -22,8 +22,8 @@ float ColliderComponent::GetRadius() const
 // 衝突処理
 bool Intersect(const ColliderComponent& a, const ColliderComponent& b)
 {
+    // 計算負荷軽減のためsqrtせずに比較
     // 衝突した物体との距離
-    // 計算負荷軽減のためsqrtせずに取得
     Vector2 diff = a.GetCenter() - b.GetCenter();
     float distSq = diff.LengthSq();
     // 衝突円の半径の合計以下なら衝突

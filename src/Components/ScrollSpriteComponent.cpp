@@ -1,11 +1,11 @@
 #include "ScrollSpriteComponent.h"
-#include "../Actors/Actor.h"
 #include "../Game.h"
+#include "../Actors/Actor.h"
 
 ScrollSpriteComponent::ScrollSpriteComponent(class Actor *actor, int drawOrder)
-: SpriteComponent(actor, drawOrder)
-, mScrollSpeedY(0.0f)
-, mOffsetY(0.0f)
+:SpriteComponent(actor, drawOrder)
+,mScrollSpeedY(0.0f)
+,mOffsetY(0.0f)
 {
 }
 
@@ -23,7 +23,7 @@ void ScrollSpriteComponent::Update(float deltaTime)
 
 void ScrollSpriteComponent::Draw(SDL_Renderer* renderer)
 {
-    // スクロールを考慮して２枚描画する
+    // スクロールさせるため２枚並べて描画する
     // 通常のテクスチャ描画
     SDL_Rect r_bottom;
     r_bottom.w = static_cast<int>(mTexWidth * mActor->GetScale());

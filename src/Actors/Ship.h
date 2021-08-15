@@ -14,8 +14,8 @@ private:
     const float ShipSpeed = 480.0f; // 移動速度
 
     bool mIsCanShot;      // ミサイルを撃てるかどうか？
-    float mShotDeltaTime; // ミサイルを撃ってからの時間
-    const float CanShotTime = 0.15f; // ミサイルを撃てるようになるまでの時間
+    float mDeltaShotTime; // ミサイルを撃ってからの時間
+    const float CanShotTime = 0.15f; // ミサイルを撃てるようになるまでの間隔
 
     class ColliderComponent* mCollider;  // コライダ
 };

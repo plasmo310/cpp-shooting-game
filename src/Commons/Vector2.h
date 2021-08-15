@@ -9,7 +9,6 @@ public:
 
     Vector2();
     explicit Vector2(float inX, float inY);
-    void Set(float inX, float inY);
 
     // 演算子のオーバーロード
     friend Vector2 operator+(const Vector2& a, const Vector2& b);
@@ -22,7 +21,6 @@ public:
 
     float Length() const;
     float LengthSq() const;
-    void Normalize();
 
     static const Vector2 Zero;
 };
