@@ -8,8 +8,8 @@
 
 Ship::Ship(Game* game)
 :Actor(game)
-,mRightSpeed(0.0f)
-,mDownSpeed(0.0f)
+,mRightMove(0.0f)
+,mDownMove(0.0f)
 ,mIsCanShot(false)
 ,mShotDeltaTime(0.0f)
 {
@@ -28,8 +28,8 @@ void Ship::UpdateActor(float deltaTime)
     Actor::UpdateActor(deltaTime);
     // 宇宙船を移動させる
     Vector2 pos = GetPosition();
-    pos.x += mRightSpeed * deltaTime;
-    pos.y += mDownSpeed * deltaTime;
+    pos.x += mRightMove * deltaTime;
+    pos.y += mDownMove * deltaTime;
     if (pos.x < 25.0f)
     {
         pos.x = 25.0f;
@@ -53,9 +53,10 @@ void Ship::UpdateActor(float deltaTime)
     {
         if (Intersect(*mCollider, *(enemy->GetCollider())))
         {
-            // TODO ゲームオーバー処理
+            // ゲーム終了
+            GetGame()->SetNextScene(Game::END_SCENE);
             SetState(EDead);
-            break;
+            return;
         }
     }
 
@@ -74,24 +75,24 @@ void Ship::UpdateActor(float deltaTime)
 // キーボード入力
 void Ship::ProcessKeyboard(const uint8_t* state)
 {
-    mRightSpeed = 0.0f;
-    mDownSpeed = 0.0f;
+    mRightMove = 0.0f;
+    mDownMove = 0.0f;
     // キー入力で上下左右に移動させる
     if (state[SDL_SCANCODE_D])
     {
-        mRightSpeed += ShipSpeed;
+        mRightMove += ShipSpeed;
     }
     if (state[SDL_SCANCODE_A])
     {
-        mRightSpeed -= ShipSpeed;
+        mRightMove -= ShipSpeed;
     }
     if (state[SDL_SCANCODE_S])
     {
-        mDownSpeed += ShipSpeed;
+        mDownMove += ShipSpeed;
     }
     if (state[SDL_SCANCODE_W])
     {
-        mDownSpeed -= ShipSpeed;
+        mDownMove -= ShipSpeed;
     }
     // ミサイルを撃つ
     if (state[SDL_SCANCODE_K])
@@ -101,7 +102,7 @@ void Ship::ProcessKeyboard(const uint8_t* state)
             // 撃つ感覚を空けるためフラグを付ける
             mIsCanShot = false;
             mShotDeltaTime = 0.0f;
-            // ミサイル生成
+            // ミサイル生成s
             Missile* missile = new Missile(GetGame());
             Vector2 pos = GetPosition();
             missile->SetPosition(Vector2(pos.x, pos.y - 30.0f));

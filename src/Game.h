@@ -20,21 +20,29 @@ public:
     void AddSprite(class SpriteComponent* sprite);    // 描画中のスプライトを追加
     void RemoveSprite(class SpriteComponent* sprite); // 描画中のスプライトを削除
 
-    SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
-
     void AddEnemy(class Enemy* enemy);    // エネミー追加
     void RemoveEnemy(class Enemy* enemy); // エネミー削除
+
+    SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
 
     constexpr static const float ScreenWidth  = 768.0f;  // スクリーン横幅
     constexpr static const float ScreenHeight = 1024.0f; // スクリーン縦幅
 
+    // シーン
+    enum Scene
+    {
+        READY_SCENE, // ゲーム開始
+        GAME_SCENE,  // ゲーム中
+        END_SCENE    // ゲーム終了
+    };
+
 private:
     bool InitializeSDL();  // SDL関連初期化
-    void ProcessInput();   // ゲームループ 入力検知
-    void UpdateGame();     // ゲームループ 更新処理
-    void GenerateOutput(); // ゲームループ 出力処理
-    void LoadData();       // データロード処理
-    void UnloadData();     // データアンロード処理
+    void ProcessInput();   // 入力検知
+    void InitScene();      // シーン初期化処理
+    void StartScene();     // シーン初期化処理
+    void UpdateScene();    // シーン更新処理
+    void GenerateOutput(); // 出力処理
 
     std::vector<class Actor*> mActors;            // アクタリスト
     std::vector<class Actor*> mPendingActors;     // 待機中のアクタリスト
@@ -46,11 +54,19 @@ private:
     Uint32 mTicksCount;      // ゲーム時間
     bool mIsRunning;         // 実行中か否か？
     bool mUpdatingActors;    // アクタ更新中か否か？
+    bool mGameClear;         // ゲームをクリアしたか否か？
 
-    class Ship* mShip; // 宇宙船
-    std::vector<class Enemy*> mEnemies; // 敵キャラ軍
+    class Actor* mStartMsg; // 開始メッセージ
+    class Actor* mEndMsg;   // 終了メッセージ
+    class Ship* mShip;      // 宇宙船
+    std::vector<class Enemy*> mEnemies; // エネミー軍
+
+    Scene mScene;     // 現在のシーン
+    Scene mNextScene; // 遷移するシーン
 
 public:
     // getter, setter
     std::vector<class Enemy*> GetEnemies() { return mEnemies; }
+    Scene GetNextScene() const { return mNextScene; }
+    void SetNextScene(const Scene scene) { mNextScene = scene; }
 };

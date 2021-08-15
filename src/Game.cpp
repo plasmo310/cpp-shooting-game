@@ -12,6 +12,7 @@ Game::Game()
 ,mTicksCount(0)
 ,mIsRunning(true)
 ,mUpdatingActors(false)
+,mGameClear(false)
 {
 }
 
@@ -24,8 +25,6 @@ bool Game::Initialize()
         SDL_Log("%s", SDL_GetError());
         return false;
     }
-    // データのロード処理
-    LoadData();
     // ゲーム時間取得
     mTicksCount = SDL_GetTicks();
     return true;
@@ -50,10 +49,32 @@ bool Game::InitializeSDL()
     return true;
 }
 
-// データのロード処理
-void Game::LoadData()
+// ゲームループ処理
+void Game::RunLoop()
 {
-    // 背景の描画
+    // シーン初期化処理
+    mScene = READY_SCENE;
+    mNextScene = READY_SCENE;
+    InitScene();
+    StartScene();
+
+    while (mIsRunning)
+    {
+        // シーン更新処理
+        UpdateScene();
+        // シーン初期化処理
+        if (mScene != mNextScene)
+        {
+            mScene = mNextScene;
+            StartScene();
+        }
+    }
+}
+
+// シーン初期化処理（一度だけ呼ばれる）
+void Game::InitScene()
+{
+    // 背景の作成
     // ２枚のスクロール速度を変えて視差スクロールにする
     Actor* bgBack = new Actor(this);
     bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
@@ -66,116 +87,68 @@ void Game::LoadData()
     ScrollSpriteComponent* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
     bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
     bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
-
-    // 宇宙船の作成
-    mShip = new Ship(this);
-    mShip->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
-
-    // TODO ジェネレータの作成
-    // エネミーの作成
-    Enemy* enemy = new Enemy(this);
-    enemy->SetPosition(Vector2(ScreenWidth / 2, 0.0f));
-    enemy->SetScale(1.2f);
-    enemy->SetEnemyMoveType(Enemy::SHAKE);
-
-    Enemy* enemy2 = new Enemy(this);
-    enemy2->SetPosition(Vector2(100, -100.0f));
-    enemy2->SetEnemySpeed(350.0f);
-
-    Enemy* enemy3 = new Enemy(this);
-    enemy3->SetPosition(Vector2(550, -200.0f));
-    enemy3->SetScale(0.7f);
-    enemy3->SetEnemyMoveType(Enemy::SHAKE);
-    enemy3->SetEnemySpeed(500.0f);
-    enemy3->SetEnemyShakeWidth(10.0f);
 }
 
-// データのアンロード処理
-void Game::UnloadData()
+// シーン開始処理
+void Game::StartScene()
 {
-    // アクタ破棄
-    while (!mActors.empty())
-    {
-        delete mActors.back();
+    switch (mScene) {
+        case READY_SCENE:
+            {
+                // クリアフラグを初期化
+                mGameClear = false;
+                // 開始メッセージの作成
+                mStartMsg = new Actor(this);
+                mStartMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+                SpriteComponent* startMsgSprite = new SpriteComponent(mStartMsg, 200);
+                startMsgSprite->SetTexture(LoadTexture("../Assets/msg_start.png"));
+                // 宇宙船の作成
+                mShip = new Ship(this);
+                mShip->SetPosition(Vector2(ScreenWidth / 2, 824.0f));
+            }
+            break;
+        case GAME_SCENE:
+            {
+                // TODO ジェネレータの作成
+                // エネミーの作成
+                Enemy* enemy = new Enemy(this);
+                enemy->SetPosition(Vector2(ScreenWidth / 2, 0.0f));
+                enemy->SetScale(1.2f);
+                enemy->SetEnemyMoveType(Enemy::SHAKE);
+
+                Enemy* enemy2 = new Enemy(this);
+                enemy2->SetPosition(Vector2(100, -100.0f));
+                enemy2->SetEnemySpeed(350.0f);
+
+                Enemy* enemy3 = new Enemy(this);
+                enemy3->SetPosition(Vector2(550, -200.0f));
+                enemy3->SetScale(0.7f);
+                enemy3->SetEnemyMoveType(Enemy::SHAKE);
+                enemy3->SetEnemySpeed(500.0f);
+                enemy3->SetEnemyShakeWidth(10.0f);
+            }
+            break;
+        case END_SCENE:
+            {
+                // 終了メッセージの作成
+                mEndMsg = new Actor(this);
+                mEndMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
+                SpriteComponent* endMsgSprite = new SpriteComponent(mEndMsg, 200);
+                endMsgSprite->SetTexture(LoadTexture(mGameClear ? "../Assets/msg_clear.png" : "../Assets/msg_over.png"));
+            }
+            break;
+        default:
+            break;
     }
-    // テクスチャ破棄
-    for (auto i : mCachedTextures)
-    {
-        SDL_DestroyTexture(i.second);
-    }
-    mCachedTextures.clear();
+
 }
 
-// ファイル名からテクスチャをロードする
-SDL_Texture* Game::LoadTexture(const std::string& fileName)
+// シーン更新処理
+void Game::UpdateScene()
 {
-    SDL_Texture* tex = nullptr;
-    auto iter = mCachedTextures.find(fileName);
-    if (iter != mCachedTextures.end())
-    {
-        // キャッシュ済なら変数から取得
-        tex = iter->second;
-    }
-    else
-    {
-        // テクスチャをロードする
-        SDL_Surface* surf = IMG_Load(fileName.c_str());
-        if (!surf)
-        {
-            SDL_Log("Error load texture file %s", fileName.c_str());
-            return nullptr;
-        }
-        tex = SDL_CreateTextureFromSurface(mRenderer, surf);
-        SDL_FreeSurface(surf);
-        if (!tex)
-        {
-            SDL_Log("Error convert surface to texture %s", fileName.c_str());
-            return nullptr;
-        }
-        // 変数にキャッシュする
-        mCachedTextures.emplace(fileName.c_str(), tex);
-    }
-    return tex;
-}
+    // 入力検知
+    ProcessInput();
 
-// ゲームループ処理
-void Game::RunLoop()
-{
-    while (mIsRunning)
-    {
-        ProcessInput();
-        UpdateGame();
-        GenerateOutput();
-    }
-}
-
-// ゲームループ 入力検知
-void Game::ProcessInput()
-{
-    // SDLイベントを受け取る
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        switch (event.type)
-        {
-            case SDL_QUIT: // ウィンドウが閉じられた時
-                mIsRunning = false;
-                break;
-        }
-    }
-    // キーの入力イベントを受け取る
-    const Uint8* state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_ESCAPE])
-    {
-        mIsRunning = false;
-    }
-    // 宇宙船のキーイベント
-    mShip->ProcessKeyboard(state);
-}
-
-// ゲームループ 更新処理
-void Game::UpdateGame()
-{
     // 最低16msは待機
     while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
     // フレームの経過時間を取得(最大50ms)
@@ -202,6 +175,26 @@ void Game::UpdateGame()
     }
     mPendingActors.clear();
 
+    // 各シーンごとのイベント
+    switch (mScene) {
+        case READY_SCENE:
+            break;
+        case GAME_SCENE:
+            // エネミーを全部撃破したら終了シーンに遷移
+            if (mEnemies.empty())
+            {
+                // 宇宙船の動きを止める
+                mShip->SetRightMove(0.0f);
+                mShip->SetDownMove(0.0f);
+                // クリア
+                mGameClear = true;
+                SetNextScene(END_SCENE);
+            }
+            break;
+        case END_SCENE:
+            break;
+    }
+
     // 破棄されたアクタを削除
     std::vector<Actor*> deadActors;
     for (auto actor : mActors)
@@ -214,6 +207,65 @@ void Game::UpdateGame()
     for (auto actor : deadActors)
     {
         delete actor;
+    }
+
+    // 出力処理
+    GenerateOutput();
+}
+
+// ゲームループ 入力検知
+void Game::ProcessInput()
+{
+    // SDLイベントを受け取る
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT: // ウィンドウが閉じられた時
+            mIsRunning = false;
+            break;
+        }
+    }
+    // キーの入力イベントを受け取る
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        mIsRunning = false;
+    }
+
+    // 各シーンごとのイベント
+    switch (mScene) {
+        case READY_SCENE:
+            // スペースかエンター押下でゲームシーンに遷移
+            if (state[SDL_SCANCODE_SPACE] || state[SDL_SCANCODE_RETURN])
+            {
+                SetNextScene(GAME_SCENE);
+                mStartMsg->SetState(Actor::EDead);
+            }
+            break;
+        case GAME_SCENE:
+            // 宇宙船のキー入力操作
+            mShip->ProcessKeyboard(state);
+            break;
+        case END_SCENE:
+            // スペースかエンター押下で開始シーンに遷移
+            if (state[SDL_SCANCODE_SPACE] || state[SDL_SCANCODE_RETURN])
+            {
+                SetNextScene(READY_SCENE);
+                mEndMsg->SetState(Actor::EDead);
+                // 宇宙船とエネミーを破棄
+                auto iter = std::find(mActors.begin(), mActors.end(), mShip);
+                if (iter != mActors.end())
+                {
+                    mShip->SetState(Actor::EDead);
+                }
+                for (auto enemy : mEnemies)
+                {
+                    enemy->SetState(Actor::EDead);
+                }
+            }
+            break;
     }
 }
 
@@ -237,13 +289,21 @@ void Game::GenerateOutput()
 // シャットダウン処理
 void Game::Shutdown()
 {
-    // データをアンロード
-    UnloadData();
-    IMG_Quit();
+    // インスタンスを破棄
+    while (!mActors.empty())
+    {
+        delete mActors.back();
+    }
+    for (auto i : mCachedTextures)
+    {
+        SDL_DestroyTexture(i.second);
+    }
+    mCachedTextures.clear();
     // SDL関連の変数を破棄
     SDL_DestroyRenderer(mRenderer);
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
+    IMG_Quit();
 }
 
 // アクタ追加処理
@@ -307,4 +367,36 @@ void Game::RemoveEnemy(Enemy* enemy)
     {
         mEnemies.erase(iter);
     }
+}
+
+// ファイル名からテクスチャをロードする
+SDL_Texture* Game::LoadTexture(const std::string& fileName)
+{
+    SDL_Texture* tex = nullptr;
+    auto iter = mCachedTextures.find(fileName);
+    if (iter != mCachedTextures.end())
+    {
+        // キャッシュ済なら変数から取得
+        tex = iter->second;
+    }
+    else
+    {
+        // テクスチャをロードする
+        SDL_Surface* surf = IMG_Load(fileName.c_str());
+        if (!surf)
+        {
+            SDL_Log("Error load texture file %s", fileName.c_str());
+            return nullptr;
+        }
+        tex = SDL_CreateTextureFromSurface(mRenderer, surf);
+        SDL_FreeSurface(surf);
+        if (!tex)
+        {
+            SDL_Log("Error convert surface to texture %s", fileName.c_str());
+            return nullptr;
+        }
+        // 変数にキャッシュする
+        mCachedTextures.emplace(fileName.c_str(), tex);
+    }
+    return tex;
 }
