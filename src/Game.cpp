@@ -62,13 +62,13 @@ void Game::InitScene()
     auto* bgBack = new Actor(this);
     bgBack->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
     auto* bgBackSprite = new ScrollSpriteComponent(bgBack, 10);
-    bgBackSprite->SetTexture(LoadTexture("../Assets/bg_back.png"));
+    bgBackSprite->SetTexture(LoadTexture(GetAssetsPath() + "bg_back.png"));
     bgBackSprite->SetScrollSpeedY(100.0f); // 速度：100
 
     auto* bgFront = new Actor(this);
     bgFront->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
     auto* bgFrontSprite = new ScrollSpriteComponent(bgFront, 20);
-    bgFrontSprite->SetTexture(LoadTexture("../Assets/bg_front.png"));
+    bgFrontSprite->SetTexture(LoadTexture(GetAssetsPath() + "bg_front.png"));
     bgFrontSprite->SetScrollSpeedY(200.0f); // 速度：200
 }
 
@@ -105,7 +105,7 @@ void Game::StartScene()
                 mStartMsg = new Actor(this);
                 mStartMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
                 auto* startMsgSprite = new SpriteComponent(mStartMsg, 200);
-                startMsgSprite->SetTexture(LoadTexture("../Assets/msg_start.png"));
+                startMsgSprite->SetTexture(LoadTexture(GetAssetsPath() + "msg_start.png"));
                 // 宇宙船の作成
                 mShip = new Ship(this);
                 mShip->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight - 200.0f));
@@ -137,7 +137,7 @@ void Game::StartScene()
                 mEndMsg = new Actor(this);
                 mEndMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
                 auto* endMsgSprite = new SpriteComponent(mEndMsg, 200);
-                endMsgSprite->SetTexture(LoadTexture(mGameClear ? "../Assets/msg_clear.png" : "../Assets/msg_over.png"));
+                endMsgSprite->SetTexture(LoadTexture(GetAssetsPath() + (mGameClear ? "msg_clear.png" : "msg_over.png")));
             }
             break;
         default:

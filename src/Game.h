@@ -63,6 +63,10 @@ private:
     class Actor* mEndMsg;   // 終了メッセージ
     class Ship* mShip;      // 宇宙船
     std::vector<class Enemy*> mEnemies; // エネミー群
+    
+    // 画像パス
+    const std::string AssetsPath = "../Assets/"; // Mac + CLion
+    //const std::string AssetsPath = "Assets\\"; // Win + VisualStudio
 
 public:
     // getter, setter
@@ -71,4 +75,5 @@ public:
     Scene GetScene() const { return mScene; }
     void SetScene(const Scene scene) { mScene = scene; }
     std::vector<class Enemy*> GetEnemies() { return mEnemies; }
+    std::string GetAssetsPath() const { return AssetsPath; }
 };

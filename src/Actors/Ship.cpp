@@ -16,7 +16,7 @@ Ship::Ship(Game* game)
 {
     // スプライト設定
     auto* sprite = new SpriteComponent(this);
-    sprite->SetTexture(GetGame()->LoadTexture("../Assets/ship.png"));
+    sprite->SetTexture(GetGame()->LoadTexture(GetGame()->GetAssetsPath() + "ship.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
     mCollider->SetRadius(70.0f * GetScale());

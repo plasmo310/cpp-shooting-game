@@ -10,7 +10,7 @@ Missile::Missile(class Game *game)
 {
     // スプライト追加
     auto* sprite = new SpriteComponent(this, 90);
-    sprite->SetTexture(GetGame()->LoadTexture("../Assets/missile.png"));
+    sprite->SetTexture(GetGame()->LoadTexture(GetGame()->GetAssetsPath() + "missile.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
     mCollider->SetRadius(50.0f * GetScale());

@@ -14,7 +14,7 @@ Enemy::Enemy(Game* game)
 {
     // スプライト設定
     auto* sprite = new SpriteComponent(this);
-    sprite->SetTexture(GetGame()->LoadTexture("../Assets/enemy.png"));
+    sprite->SetTexture(GetGame()->LoadTexture(GetGame()->GetAssetsPath() + "enemy.png"));
     // コライダ追加
     mCollider = new ColliderComponent(this);
     mCollider->SetRadius(50.0f * GetScale());
