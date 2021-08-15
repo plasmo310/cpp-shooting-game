@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "Enemy.h"
 #include "Missile.h"
+#include "BombEffect.h"
 #include "../Game.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/ColliderComponent.h"
@@ -56,6 +57,9 @@ void Ship::UpdateActor(float deltaTime)
             // ゲーム終了
             GetGame()->SetNextScene(Game::END_SCENE);
             SetState(EDead);
+            // 宇宙船の位置で爆発させる
+            BombEffect* bomb = new BombEffect(GetGame());
+            bomb->SetPosition(*(new Vector2(GetPosition())));
             return;
         }
     }

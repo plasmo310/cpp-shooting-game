@@ -1,5 +1,6 @@
 #include "Missile.h"
 #include "Enemy.h"
+#include "BombEffect.h"
 #include "../Game.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/ColliderComponent.h"
@@ -37,6 +38,9 @@ void Missile::UpdateActor(float deltaTime)
         {
             SetState(EDead);
             enemy->SetState(EDead);
+            // エネミーの位置で爆発させる
+            BombEffect* bomb = new BombEffect(GetGame());
+            bomb->SetPosition(*(new Vector2(enemy->GetPosition())));
             break;
         }
     }
