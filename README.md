@@ -6,7 +6,7 @@ C++で開発したシンプルな2Dシューティングです。
 <br>
 使用IDE：CLion
 <br>
-※SDL2、SDL2_imageをインストールしてパスを通してビルドする必要があります。
+※SDL2、SDL2_imageをインストール後、パスを通してビルドする必要があります。
 <br>
 　(Macの場合はbrewでインストール後、CMakeLists.txt内の記述を変更すればOK)
 <br>
