@@ -6,6 +6,7 @@
 #include "Components/SpriteComponent.h"
 #include "Components/ScrollSpriteComponent.h"
 #include "Commons/Math.h"
+#include "Scenes/ReadyScene.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -76,8 +77,8 @@ void Game::InitScene()
 void Game::RunLoop()
 {
     // 開始シーンを設定
-    mScene = READY_SCENE;
-    mNextScene = READY_SCENE;
+    mScene = new ReadyScene(this);
+    mNextScene = mScene;
     StartScene();
 
     while (mIsRunning)
@@ -85,8 +86,9 @@ void Game::RunLoop()
         // シーン更新処理
         UpdateScene();
         // シーン開始処理
-        if (mScene != mNextScene)
+        if (mScene->GetSceneName().compare(mNextScene->GetSceneName()) != 0)
         {
+            delete mScene;
             mScene = mNextScene;
             StartScene();
         }
@@ -96,53 +98,7 @@ void Game::RunLoop()
 // シーン開始処理
 void Game::StartScene()
 {
-    switch (mScene) {
-        case READY_SCENE:
-            {
-                // クリアフラグを初期化
-                mGameClear = false;
-                // 開始メッセージの作成
-                mStartMsg = new Actor(this);
-                mStartMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-                auto* startMsgSprite = new SpriteComponent(mStartMsg, 200);
-                startMsgSprite->SetTexture(LoadTexture(GetAssetsPath() + "msg_start.png"));
-                // 宇宙船の作成
-                mShip = new Ship(this);
-                mShip->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight - 200.0f));
-            }
-            break;
-        case GAME_SCENE:
-            {
-                // エネミーをランダム作成
-                for (int i = 0; i < 30; i++)
-                {
-                    auto* enemy = new Enemy(this);
-                    enemy->SetPosition(Vector2(Math::GetRand(100.0f, ScreenWidth - 100.0f), -100.0f));
-                    enemy->SetEnemySpeed(Math::GetRand(300.0f, 550.0f));
-                    enemy->SetScale(Math::GetRand(0.5f, 1.5f));
-                    // 数匹ごとに揺らす
-                    if (i % 2 == 0)
-                    {
-                        enemy->SetEnemyMoveType(Enemy::SHAKE);
-                        enemy->SetEnemyShakeWidth(Math::GetRand(5.0f, 15.0f));
-                    }
-                    // 数匹ずつ動かす
-                    enemy->SetWaitTime(i / 3 * Math::GetRand(80.0f, 100.0f));
-                }
-            }
-            break;
-        case END_SCENE:
-            {
-                // 終了メッセージの作成
-                mEndMsg = new Actor(this);
-                mEndMsg->SetPosition(Vector2(ScreenWidth / 2, ScreenHeight / 2));
-                auto* endMsgSprite = new SpriteComponent(mEndMsg, 200);
-                endMsgSprite->SetTexture(LoadTexture(GetAssetsPath() + (mGameClear ? "msg_clear.png" : "msg_over.png")));
-            }
-            break;
-        default:
-            break;
-    }
+    mScene->Start();
 }
 
 // シーン更新処理
@@ -176,23 +132,8 @@ void Game::UpdateScene()
     }
     mPendingActors.clear();
 
-    // 各シーンごとのイベント
-    switch (mScene) {
-        case READY_SCENE:
-            break;
-        case GAME_SCENE:
-            // エネミーを全部撃破したらゲームクリア
-            if (mEnemies.empty())
-            {
-                mGameClear = true;
-                SetNextScene(END_SCENE);
-            }
-            break;
-        case END_SCENE:
-            break;
-        default:
-            break;
-    }
+    // 各シーンの更新処理
+    mScene->Update(deltaTime);
 
     // 死亡したアクタを破棄
     std::vector<Actor*> deadActors;
@@ -233,41 +174,8 @@ void Game::ProcessInput()
         mIsRunning = false;
     }
 
-    // 各シーンごとのイベント
-    switch (mScene) {
-        case READY_SCENE:
-            // スペースかエンター押下でゲームシーンに遷移
-            if (state[SDL_SCANCODE_SPACE] || state[SDL_SCANCODE_RETURN])
-            {
-                SetNextScene(GAME_SCENE);
-                mStartMsg->SetState(Actor::EDead);
-            }
-            break;
-        case GAME_SCENE:
-            // 宇宙船のキー入力操作
-            mShip->ProcessKeyboard(state);
-            break;
-        case END_SCENE:
-            // スペースかエンター押下で開始シーンに遷移
-            if (state[SDL_SCANCODE_SPACE] || state[SDL_SCANCODE_RETURN])
-            {
-                SetNextScene(READY_SCENE);
-                mEndMsg->SetState(Actor::EDead);
-                // 宇宙船とエネミーを破棄
-                auto iter = std::find(mActors.begin(), mActors.end(), mShip);
-                if (iter != mActors.end())
-                {
-                    mShip->SetState(Actor::EDead);
-                }
-                for (auto enemy : mEnemies)
-                {
-                    enemy->SetState(Actor::EDead);
-                }
-            }
-            break;
-        default:
-            break;
-    }
+    // 各シーンの入力検知
+    mScene->ProcessInput(state);
 }
 
 // ゲームループ 出力処理

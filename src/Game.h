@@ -25,14 +25,6 @@ public:
 
     SDL_Texture* LoadTexture(const std::string& fileName); // テクスチャロード処理
 
-    // シーン
-    enum Scene
-    {
-        READY_SCENE, // 開始シーン
-        GAME_SCENE,  // ゲームシーン
-        END_SCENE    // 終了シーン
-    };
-
     constexpr static const float ScreenWidth  = 768.0f;  // スクリーン横幅
     constexpr static const float ScreenHeight = 1024.0f; // スクリーン縦幅
 
@@ -56,12 +48,10 @@ private:
     bool mUpdatingActors;    // アクタ更新中か否か？
     bool mGameClear;         // ゲームをクリアしたか否か？
 
-    Scene mScene;     // 現在のシーン
-    Scene mNextScene; // 遷移するシーン
+    class Scene* mScene;     // 現在のシーン
+    class Scene* mNextScene; // 遷移するシーン
 
-    class Actor* mStartMsg; // 開始メッセージ
-    class Actor* mEndMsg;   // 終了メッセージ
-    class Ship* mShip;      // 宇宙船
+    class Ship* mShip;       // 宇宙船
     std::vector<class Enemy*> mEnemies; // エネミー群
     
     // 画像パス
@@ -70,10 +60,15 @@ private:
 
 public:
     // getter, setter
-    Scene GetNextScene() const { return mNextScene; }
-    void SetNextScene(const Scene scene) { mNextScene = scene; }
-    Scene GetScene() const { return mScene; }
-    void SetScene(const Scene scene) { mScene = scene; }
+    Scene* GetNextScene() const { return mNextScene; }
+    void SetNextScene(class Scene* scene) { mNextScene = scene; }
+    Scene* GetScene() const { return mScene; }
+    void SetScene(class Scene* scene) { mScene = scene; }
+    std::vector<class Actor*> GetActors() { return mActors; }
     std::vector<class Enemy*> GetEnemies() { return mEnemies; }
     std::string GetAssetsPath() const { return AssetsPath; }
+    void SetGameClear(const bool isClear) { mGameClear = isClear; }
+    bool GetGameClear() const { return mGameClear; }
+    void SetShip(class Ship* ship) { mShip = ship; }
+    Ship* GetShip() const { return mShip; }
 };

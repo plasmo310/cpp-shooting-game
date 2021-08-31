@@ -6,6 +6,8 @@
 #include "../Game.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/ColliderComponent.h"
+#include "../Scenes/Scene.h"
+#include "../Scenes/EndScene.h"
 
 Ship::Ship(Game* game)
 :Actor(game)
@@ -28,7 +30,7 @@ void Ship::UpdateActor(float deltaTime)
     // 親のメソッド呼び出し
     Actor::UpdateActor(deltaTime);
     // ゲーム終了していたら動かさない
-    if (GetGame()->GetScene() != Game::END_SCENE)
+    if (GetGame()->GetScene()->GetSceneName().compare("END") != 0)
     {
         // 宇宙船を移動させる
         Vector2 pos = GetPosition();
@@ -59,7 +61,7 @@ void Ship::UpdateActor(float deltaTime)
         if (Intersect(*mCollider, *(enemy->GetCollider())))
         {
             // ゲーム終了
-            GetGame()->SetNextScene(Game::END_SCENE);
+            GetGame()->SetNextScene(new EndScene(GetGame()));
             SetState(EDead);
             // 宇宙船の位置で爆発エフェクト
             auto* bomb = new BombEffect(GetGame());

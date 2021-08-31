@@ -3,6 +3,7 @@
 #include "../Game.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/ColliderComponent.h"
+#include "../Scenes/EndScene.h"
 
 Enemy::Enemy(Game* game)
 :Actor(game)
@@ -58,7 +59,7 @@ void Enemy::UpdateActor(float deltaTime)
     if (pos.y >= Game::ScreenHeight)
     {
         SetState(EDead);
-        GetGame()->SetNextScene(Game::END_SCENE);
+        GetGame()->SetNextScene(new EndScene(GetGame()));
     }
     SetPosition(pos);
 }
