@@ -31,3 +31,7 @@ K：ミサイル発射
 カニを全て倒したらクリア
 <br>
 カニを逃すかぶつかったらゲームオーバー
+<br>
+<br>
+[スクリーンショット]<br>
+![shoot_sample01](https://user-images.githubusercontent.com/77447256/142758144-ef59d75a-754f-4d83-8188-44b2dabf1fa5.png)
